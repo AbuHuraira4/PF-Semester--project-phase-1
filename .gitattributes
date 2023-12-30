@@ -1,2 +1,529 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+#include <iostream> 
+#include <fstream>   
+
+using namespace std;
+
+const int No_of_entries = 5;
+int entry_count = 0;
+int entries = 0;
+
+struct Candy {
+	int id;
+	string name;
+	int Boxes_per_Week;
+	int Profit_per_Week;
+};
+
+struct Employee {
+	int employee_id;
+	float hourly_wage;
+	int weekly_hours_worked;
+	string employee_name;
+};
+
+Employee employees[No_of_entries];
+Candy candies[No_of_entries];
+
+void menu();
+// arrays is passed by refrence no nedd to declare & sign
+void AddEntry_employees(Employee employees[], int& entry_count);
+void View_employees(const Employee employees[], int& entry_count);
+bool Search_employees(const Employee employees[], int& entry_count, const int& id);
+void Update_employees(Employee employees[], int& entry_count);
+void Delete_employees(Employee employees[], int& entry_count);
+void AddEntry_candy(Candy candies[], int& entry_count);
+void ViewCandies_candy(const Candy candies[], int& entry_count);
+bool Search_candy(const Candy candies[], int& entry_count, const int& id);
+void Update_candy(Candy candies[], int& entry_count);
+void Delete_candy(Candy candies[], int& entry_count);
+int main() {
+	cout << "   -------------------------------\n";
+	cout << "   -CANDY SHOP Management SYSTEM-\n";
+	cout << "   -------------------------------\n";
+
+	ofstream fout;
+	fout.open("Employees.txt", ios::app);
+	fout.close();
+
+	fout.open("Candies.txt", ios::app);
+	fout.close();
+
+	ifstream fin;
+	fin.open("Employees.txt");
+
+	while (fin >> employees[entries].employee_id >> employees[entries].hourly_wage
+		>> employees[entries].weekly_hours_worked
+		>> employees[entries].employee_name) {
+		entries++;
+	}
+	fin.close();
+
+	fin.open("Candies.txt");
+
+	while (fin >> candies[entry_count].id
+		>> candies[entry_count].name
+		>> candies[entry_count].Boxes_per_Week
+		>> candies[entry_count].Profit_per_Week) {
+		entry_count++;
+	}
+	fin.close();
+
+	menu();
+	return 0;
+}
+void menu() {
+	int sys_choice;
+	cout << "\n1. Managing candies\n";
+	cout << "2. Managing employees\n";
+	cout << "3. To exit\n";
+	cout << "Entity choice = \t";
+	cin >> sys_choice;
+
+	while (sys_choice != 1 && sys_choice != 2 && sys_choice != 3) {
+		cout << "Wrong input!\t Enter again ('1' or '2' or '3').\n";
+		cin >> sys_choice;
+	}
+
+	while (true) {
+		int action;
+		cout << "\nWhat do you wish to do ?\n";
+		cout << "1. Enter data.\n";
+		cout << "2. View data.\n";
+		cout << "3. Search in the database.\n";
+		cout << "4. Change an attribute.\n";
+		cout << "5. Delete an entire entry.\n";
+		cout << "6. Go back\n";
+		cout << "\nFunction choice: \t";
+		cin >> action;
+
+		while (action != 1 && action != 2 && action != 3 && action != 4 && action != 5 && action != 6) {
+			cout << "Wrong input!\t Enter again.\n";
+			cin >> action;
+		}
+
+		if (sys_choice == 1) {
+			switch (action) {
+			case 1:
+				if (entries < No_of_entries) {
+					cout << "\nEntering data of a new Candy.\n";
+					AddEntry_candy(candies, entry_count);
+					break;
+				}
+				else {
+					cout << "Maximum number of candies reached. Please restart the program to add a new entry.";
+					break;
+				}
+			case 2:
+				cout << "\nViewing data of all the previous candies.\n";
+				ViewCandies_candy(candies, entry_count);
+				break;
+			case 3:
+				cout << "\nSearching for a Candy among the listed candies.\n";
+				int id;
+				cout << "Enter ID to search for: ";
+				cin >> id;
+
+				while (id < 231000 || id > 231999) {
+					cout << "Enter a '6' digit number starting with 231 for an ID.\n";
+					cout << "\nEnter product Id = \t";
+					cin >> id;
+				}
+				if (Search_candy(candies, entry_count, id)) {
+					cout << "ID found";
+				}
+				else {
+					cout << "ID not found";
+				}
+				break;
+			case 4:
+				cout << "\nChanging an attribute of a Candy.\n";
+				Update_candy(candies, entry_count);
+				break;
+			case 5:
+				cout << "\nDeleting an entire entry.\n";
+				Delete_candy(candies, entry_count);
+				break;
+			case 6:
+				menu();
+				break;
+			default:
+				cout << "Something went wrong!!!";
+				break;
+			}
+		}
+		else if (sys_choice == 2) {
+			switch (action) {
+			case 1:
+				if (entry_count < No_of_entries) {
+					cout << "\nEntering data of a new employee.\n";
+					AddEntry_employees(employees, entries);
+					break;
+				}
+				else {
+					cout << "Maximum number of employees reached. Please restart the program to add a new entry.";
+					break;
+				}
+			case 2:
+				cout << "\nViewing data of all the previous candies.\n";
+				View_employees(employees, entries);
+				break;
+			case 3:
+				cout << "\nSearching for an employee among the listed candies.\n";
+				int id;
+				cout << "Enter ID to search for: ";
+				cin >> id;
+
+				while (id < 100 || id > 999) {
+					cout << "Enter a '3' digit number for an ID.\n";
+					cout << "\nEnter employee Id = \t";
+					cin >> id;
+				}
+				if (Search_employees(employees, entries, id)) {
+					cout << "ID found";
+				}
+				else {
+					cout << "ID not found";
+				}
+				break;
+			case 4:
+				cout << "\nChanging an attribute of an employee.\n";
+				Update_employees(employees, entries);
+				break;
+			case 5:
+				cout << "\nDeleting an entire entry.\n";
+				Delete_employees(employees, entries);
+				break;
+			case 6:
+				menu();
+				break;
+			default:
+				cout << "Something went wrong!!!";
+				break;
+			}
+		}
+		else if (sys_choice == 3) {
+			return;
+		}
+	}
+}
+void AddEntry_employees(Employee employees[], int& entry_count) {
+	ofstream fout;
+	fout.open("Employees.txt", ios::app);
+
+	if (entry_count < No_of_entries) {
+		cout << "\nEnter employee ID (3-digit number): ";
+		cin >> employees[entry_count].employee_id;
+
+		while (employees[entry_count].employee_id < 100 || employees[entry_count].employee_id > 999) {
+			cout << "\nID must be a 3-digit number.\n";
+			cout << "Enter employee ID (3-digit number): ";
+			cin >> employees[entry_count].employee_id;
+		}
+
+		for (int i = 0; i < entry_count; ++i) {
+			if (employees[i].employee_id == employees[entry_count].employee_id) {
+				cout << "This ID already exists. Please enter a different ID.\n";
+				return;
+			}
+		}
+
+		cout << "Enter Employee Name: ";
+		cin >> employees[entry_count].employee_name;
+
+		cout << "Enter Hourly Wage: ";
+		cin >> employees[entry_count].hourly_wage;
+
+		cout << "Enter Weekly Hours Worked: ";
+		cin >> employees[entry_count].weekly_hours_worked;
+
+
+
+		fout << employees[entry_count].employee_id << "\t";
+		fout << employees[entry_count].employee_name << "\t";
+		fout << employees[entry_count].hourly_wage << "\t";
+		fout << employees[entry_count].weekly_hours_worked << "\n";
+
+		fout.close();
+		entries++;
+	}
+	else {
+		cout << "Maximum entries reached!\n";
+	}
+}
+void View_employees(const Employee employees[], int& entry_count) {
+	cout << "Employee ID\tHourly Wage\tWeekly Hours Worked\tEmployee Name\n";
+	for (int i = 0; i < entry_count; ++i) {
+		cout << employees[i].employee_id << "\t\t"
+			<< employees[i].employee_name << "\t\t" \
+			<< employees[i].hourly_wage << "\t\t"
+			<< employees[i].weekly_hours_worked << endl;
+	}
+}
+bool Search_employees(const Employee employees[], int& entry_count, const int& Check_ID) {
+
+	for (int i = 0; i < entry_count; ++i) {
+		if (employees[i].employee_id == Check_ID) {
+			cout << "Employee ID: \t" << employees[i].employee_id << endl;
+			cout << "Employee Name: " << employees[i].employee_name << endl;
+			cout << "Hourly Wage: \t" << employees[i].hourly_wage << endl;
+			cout << "Weekly Hours Worked: " << employees[i].weekly_hours_worked << endl;
+			return true;
+		}
+	}
+
+	cout << "Incorrect ID!!!\nOR Employee with ID " << Check_ID << " is not present.\n";
+	return false;
+}
+void Update_employees(Employee employees[], int& entry_count) {
+	ofstream fout;
+	fout.open("Employees.txt");
+
+	int check_id;
+	int Update_Choice;
+	bool id_found = false;
+
+	cout << "Enter the ID of the employee you want to change the attribute of: ";
+	cin >> check_id;
+
+	while (check_id < 100 || check_id > 999) {
+		cout << "Enter a '3' digit number for an ID: ";
+		cin >> check_id;
+	}
+
+	for (int i = 0; i < entry_count; ++i) {
+		if (employees[i].employee_id == check_id) {
+			id_found = true;
+			cout << "What do you wish to change?\n";
+			cout << "1. Change Employee Name.\n";
+			cout << "2. Change Hourly Wage.\n";
+			cout << "3. Change Weekly Hours Worked.\n";
+			cout << "Enter choice: ";
+			cin >> Update_Choice;
+
+			while (Update_Choice != 1 && Update_Choice != 2 && Update_Choice != 3) {
+				cout << "Wrong input!\t Enter again: ";
+				cin >> Update_Choice;
+			}
+
+			switch (Update_Choice) {
+			case 1:
+				cout << "Enter Employee Name: ";
+				cin >> employees[i].employee_name;
+				break;
+			case 2:
+				cout << "Enter Hourly Wage: ";
+				cin >> employees[i].hourly_wage;
+				break;
+			case 3:
+				cout << "Enter Weekly Hours Worked: ";
+				cin >> employees[i].weekly_hours_worked;
+				break;
+			default:
+				cout << "Something went wrong!!!";
+				break;
+			}
+		}
+
+		fout << employees[i].employee_id << "\t";
+		fout << employees[i].employee_name << "\t";
+		fout << employees[i].weekly_hours_worked << "\t";
+		fout << employees[i].hourly_wage << "\n";
+	}
+
+	if (!id_found) {
+		cout << "Employee with ID " << check_id << " is not found.\n";
+	}
+	fout.close();
+}
+void Delete_employees(Employee employees[], int& entry_count) {
+	ofstream fout;
+	fout.open("Employees.txt");
+
+	int delete_id;
+	bool id_found = false;
+
+	cout << "Enter the ID of the employee you want to remove: ";
+	cin >> delete_id;
+
+	while (delete_id < 100 || delete_id > 999) {
+		cout << "Enter a '3' digit number for an ID: ";
+		cin >> delete_id;
+	}
+
+	for (int i = 0; i < entry_count; ++i) {
+		if (employees[i].employee_id == delete_id) {
+			id_found = true;
+
+			for (int j = i; j < entry_count - 1; ++j) {
+				employees[j] = employees[j + 1];
+			}
+			entry_count--;
+			break; // Exit the loop after deleting the employee
+		}
+	}
+
+	for (int i = 0; i < entry_count; ++i) {
+		fout << employees[i].employee_id << "\t";
+		fout << employees[i].employee_name << "\t";
+		fout << employees[i].weekly_hours_worked << "\t";
+		fout << employees[i].hourly_wage << "\n";
+	}
+
+	if (id_found) {
+		cout << "Employee with ID " << delete_id << " has been successfully deleted.\n";
+	}
+	else {
+		cout << "Employee with ID " << delete_id << " is not found.\n";
+	}
+	fout.close();
+}
+void AddEntry_candy(Candy candies[], int& entry_count) {
+
+	if (entry_count < No_of_entries) {
+
+		ofstream fout;
+		fout.open("Candies.txt", ios::app);
+
+		cout << "\nEnter Candy details:\n";
+		cout << "ID (6-digit number starting with 231): ";
+		cin >> candies[entry_count].id;
+
+		while (candies[entry_count].id < 231000 || candies[entry_count].id > 231999) {
+			cout << "Enter a '6' digit number starting with 231 for an ID.\n";
+			cout << "\nEnter product Id = \t";
+			cin >> candies[entry_count].id;
+		}
+
+		for (int i = 0; i < entry_count; ++i) {
+			if (candies[i].id == candies[entry_count].id) {
+				cout << "This ID already exists. Please enter a different ID.\n";
+				return;
+			}
+		}
+
+		cout << "Name: ";
+		cin >> candies[entry_count].name;
+
+		cout << "Boxes sold per week: ";
+		cin >> candies[entry_count].Boxes_per_Week;
+
+		cout << "Profit per week: ";
+		cin >> candies[entry_count].Profit_per_Week;
+
+		fout << candies[entry_count].id << "\t" << candies[entry_count].name;
+		fout << candies[entry_count].Boxes_per_Week << "\t" << candies[entry_count].Profit_per_Week << endl;
+
+		entry_count++;
+		fout.close();
+	}
+	else {
+		cout << "Maximum candies reached!\n";
+	}
+}
+void ViewCandies_candy(const Candy candies[], int& entry_count) {
+	cout << "Candy candies:\n";
+	cout << "ID\tName\t\tBoxes Sold\tProfit\n";
+	for (int i = 0; i < entry_count; ++i) {
+		cout << candies[i].id << "\t" << candies[i].name;
+		if (candies[i].name.length() < 8) {
+			cout << "\t\t";
+		}
+		else {
+			cout << "\t";
+		}
+		cout << candies[i].Boxes_per_Week << "\t\t" << candies[i].Profit_per_Week << endl;
+	}
+}
+bool Search_candy(const Candy candies[], int& entry_count, const int& search_id) {
+
+	for (int i = 0; i < entry_count; ++i) {
+		if (candies[i].id == search_id) {
+			cout << "Candy with ID " << search_id << " found:\n";
+			cout << "ID: " << candies[i].id << "\nName: " << candies[i].name
+				<< "\nBoxes Sold: " << candies[i].Boxes_per_Week
+				<< "\nProfit: " << candies[i].Profit_per_Week << endl;
+			return true;
+		}
+	}
+
+	cout << "Candy with ID " << search_id << " not found.\n";
+	return false;
+}
+void Update_candy(Candy candies[], int& entry_count) {
+	ofstream fout;
+	fout.open("Candies.txt");
+
+	int update_id;
+	cout << "Enter ID to update: ";
+	cin >> update_id;
+
+	if (!Search_candy(candies, entry_count, update_id)) {
+		cout << "Candy with ID " << update_id << " not found.\n";
+		return;
+	}
+
+	for (int i = 0; i < entry_count; ++i) {
+		if (candies[i].id == update_id) {
+			int choice;
+			cout << "Candy found! What do you wish to update?\n";
+			cout << "1. Name\n";
+			cout << "2. Boxes sold per week\n";
+			cout << "3. Profit per week\n";
+			cout << "Enter choice: ";
+			cin >> choice;
+
+			switch (choice) {
+			case 1:
+				cout << "Enter new Name: ";
+				cin >> candies[i].name;
+				break;
+			case 2:
+				cout << "Enter new Boxes sold per week: ";
+				cin >> candies[i].Boxes_per_Week;
+				break;
+			case 3:
+				cout << "Enter new Profit per week: ";
+				cin >> candies[i].Profit_per_Week;
+				break;
+			default:
+				cout << "Invalid choice!\n";
+				break;
+			}
+
+			cout << "Candy details updated for ID " << update_id << ".\n";
+		}
+
+		fout << candies[i].id << "\t" << candies[i].name;
+		fout << candies[i].Boxes_per_Week << "\t" << candies[i].Profit_per_Week << endl;
+	}
+
+	fout.close();
+}
+void Delete_candy(Candy candies[], int& entry_count) {
+	ofstream fout;
+	fout.open("Candies.txt");
+	int delete_id;
+	cout << "Enter ID to delete: ";
+	cin >> delete_id;
+
+	bool found = false;
+	for (int i = 0; i < entry_count; ++i) {
+		if (candies[i].id == delete_id) {
+			found = true;
+			for (int j = i; j < entry_count - 1; ++j) {
+				candies[j] = candies[j + 1];
+			}
+			entry_count--;
+			cout << "Candy with ID " << delete_id << " deleted successfully.\n";
+			break;
+		}
+	}
+	for (int i = 0; i < entry_count; ++i) {
+		fout << candies[i].id << "\t" << candies[i].name << "\t" << candies[i].Boxes_per_Week << "\t" << candies[i].Profit_per_Week << endl;
+	}
+	fout.close();
+
+	if (!found) {
+		cout << "Candy with ID " << delete_id << " not found.\n";
+	}
+}
